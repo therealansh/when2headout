@@ -230,7 +230,31 @@ class _PlanPageState extends State<PlanPage> {
               },
             ),
             SectionTitle(title: "Add your Friends", press: () => {}),
-            TopTravelers()
+            TopTravelers(),
+            SizedBox(height: 20),
+            GestureDetector(
+                onTap: () {
+                 
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+
+                  decoration: BoxDecoration(
+                    color:kPrimaryColor,
+                    borderRadius: BorderRadius.circular(20),
+                    
+                    ),
+                  child: Text(
+                        "Plan is ONNNNN!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: getProportionateScreenWidth(16),
+                        ),
+                      ),
+                )
+              ),
           ]),
     ));
   }

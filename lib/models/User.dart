@@ -4,6 +4,13 @@ class User {
   final String? name, image;
 
   User({@required this.name, @required this.image});
+
+  static User fromMap(Map<String, dynamic> data) {
+    return User(
+      name: data['name'] as String,
+      image: data['image'] as String,
+    );
+  }
 }
 
 // Demo List of Top Travelers

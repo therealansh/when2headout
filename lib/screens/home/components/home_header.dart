@@ -27,15 +27,15 @@ class HomeHeader extends StatelessWidget {
             children: [
               SizedBox(height: getProportionateScreenHeight(80)),
               Text(
-                "Travelers",
+                "When2Headout",
                 style: TextStyle(
-                    fontSize: getProportionateScreenWidth(73),
+                    fontSize: getProportionateScreenWidth(50),
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     height: 0.5),
               ),
               Text(
-                "Travel Community App",
+                "Plan your failed trips.",
                 style: TextStyle(color: Colors.white),
               ),
             ],
