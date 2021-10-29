@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:travel/models/places.dart';
 
 import 'package:travel/models/TravelSpot.dart';
 import 'package:travel/models/User.dart';
@@ -14,7 +16,7 @@ class PlaceCard extends StatelessWidget {
     required this.press,
   }) : super(key: key);
 
-  final TravelSpot travelSport;
+  final Item travelSport;
   final bool isFullCard;
   final GestureTapCallback press;
 
@@ -26,16 +28,20 @@ class PlaceCard extends StatelessWidget {
         children: [
           AspectRatio(
             aspectRatio: isFullCard ? 1.09 : 1.29,
-            child: Container(
+            child: CachedNetworkImage(
+              placeholder: (context,url)=>CircularProgressIndicator(),
+              imageUrl: travelSport.image!.url!,
+              imageBuilder: (context,imgProv) => Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
                 image: DecorationImage(
-                    image: AssetImage(travelSport.image!), fit: BoxFit.cover),
-              ),
+                    image: imgProv
+              ),)
             ),
+            )
           ),
           Container(
             width: getProportionateScreenWidth(isFullCard ? 158 : 137),
@@ -61,13 +67,13 @@ class PlaceCard extends StatelessWidget {
                   ),
                 ),
                 if (isFullCard)
-                  Text(
-                    travelSport.date!.day.toString(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
+                  // Text(
+                  //   travelSport.date!.day.toString(),
+                  //   style: Theme.of(context)
+                  //       .textTheme
+                  //       .headline4!
+                  //       .copyWith(fontWeight: FontWeight.bold),
+                  // ),
                 if (isFullCard)
                   // Text(
                   //   DateFormat.MMMM().format(travelSport.date) +
@@ -75,9 +81,9 @@ class PlaceCard extends StatelessWidget {
                   //       travelSport.date!.year.toString(),
                   // ),
                 VerticalSpacing(of: 10),
-                Travelers(
-                  users: travelSport.users!,
-                ),
+                // Travelers(
+                //   users: travelSport.,
+                // ),
               ],
             ),
           )

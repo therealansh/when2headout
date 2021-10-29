@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:travel/components/section_title.dart';
 import 'package:travel/constants.dart';
+import 'package:travel/models/User.dart';
 import 'package:travel/screens/home/components/top_travelers.dart';
 import 'package:travel/size_config.dart';
 
@@ -21,52 +22,55 @@ class PlanPage extends StatefulWidget {
 }
 
 class _PlanPageState extends State<PlanPage> {
-  Container textField = Container(
-    margin: EdgeInsets.all(15.0),
-    height: 61,
-    child: Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.only(left: 20.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(35.0),
-              boxShadow: [
-                BoxShadow(
-                    offset: Offset(0, 3), blurRadius: 5, color: Colors.grey)
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                        hintText: "Search a place...",
-                        hintStyle: TextStyle(color: kPrimaryColor),
-                        border: InputBorder.none),
-                  ),
+  final TextEditingController _place = TextEditingController();
+
+  Container textField() => Container(
+        margin: EdgeInsets.all(15.0),
+        height: 61,
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(left: 20.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(35.0),
+                  boxShadow: [
+                    BoxShadow(
+                        offset: Offset(0, 3), blurRadius: 5, color: Colors.grey)
+                  ],
                 ),
-              ],
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _place,
+                        decoration: InputDecoration(
+                            hintText: "Search a place...",
+                            hintStyle: TextStyle(color: kPrimaryColor),
+                            border: InputBorder.none),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+            SizedBox(width: 15),
+            Container(
+              padding: const EdgeInsets.all(15.0),
+              decoration:
+                  BoxDecoration(color: kPrimaryColor, shape: BoxShape.circle),
+              child: InkWell(
+                child: Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
+                onTap: () {},
+              ),
+            )
+          ],
         ),
-        SizedBox(width: 15),
-        Container(
-          padding: const EdgeInsets.all(15.0),
-          decoration:
-              BoxDecoration(color: kPrimaryColor, shape: BoxShape.circle),
-          child: InkWell(
-            child: Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-            onTap: () {},
-          ),
-        )
-      ],
-    ),
-  );
+      );
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
@@ -166,6 +170,48 @@ class _PlanPageState extends State<PlanPage> {
     print(_selectedDays);
   }
 
+  List<User> _selectedFriends = [];
+
+  List<User> users = [];
+
+  Future<List<User>> getUser() async {
+    final users = await firestore.collection('users').get();
+    final List<User> userList = [];
+    for (var user in users.docs) {
+      userList.add(User.fromMap(user.data()));
+    }
+    return userList;
+  }
+
+  initState() {
+    super.initState();
+    getUser().then((value) => {
+          setState(() {
+            users = value;
+          })
+        });
+  }
+
+  Future<bool?> postGroup() async {
+    if (_selectedFriends.isEmpty ||
+        _selectedDays.length != 2 || 
+        _place.text.isEmpty) {
+      return false;
+    } else {
+      try {
+        final group = await firestore.collection('groups').add({
+          'name': _place.text,
+          'members': _selectedFriends.map((user) => user.name).toList(),
+          'days':[{'start':_selectedDays.first, 'end':_selectedDays.last}],
+          "available":[{'start':_selectedDays.first, 'end':_selectedDays.last}],
+        }).then((value) => true);
+      } catch (e) {
+        print(e);
+        return false;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,8 +260,7 @@ class _PlanPageState extends State<PlanPage> {
                         ))),
               ]),
             ),
-            textField,
-            //TODO add a listview or scrollview
+            textField(),
             // popularPlaces,
             TableCalendar(
               focusedDay: _focusedDay,
@@ -230,31 +275,65 @@ class _PlanPageState extends State<PlanPage> {
               },
             ),
             SectionTitle(title: "Add your Friends", press: () => {}),
-            TopTravelers(),
+            Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(kDefaultPadding),
+                  ),
+                  padding: EdgeInsets.all(getProportionateScreenWidth(24)),
+                  // height: getProportionateScreenWidth(143),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    boxShadow: [kDefualtShadow],
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ...List.generate(
+                          users.length,
+                          (index) => UserCard(
+                            user: users[index],
+                            press: () {
+                              if (_selectedFriends.contains(users[index])) {
+                                _selectedFriends.remove(users[index]);
+                              } else {
+                                _selectedFriends.add(users[index]);
+                              }
+                              print(_selectedFriends);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
             SizedBox(height: 20),
             GestureDetector(
                 onTap: () {
-                 
+                  postGroup();
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16),
-
                   decoration: BoxDecoration(
-                    color:kPrimaryColor,
+                    color: kPrimaryColor,
                     borderRadius: BorderRadius.circular(20),
-                    
-                    ),
+                  ),
                   child: Text(
-                        "Plan is ONNNNN!",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: getProportionateScreenWidth(16),
-                        ),
-                      ),
-                )
-              ),
+                    "Plan is ONNNNN!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: getProportionateScreenWidth(16),
+                    ),
+                  ),
+                )),
           ]),
     ));
   }

@@ -16,21 +16,21 @@ class Body extends StatelessWidget {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(bottom: 25),
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              runSpacing: 25,
-              children: [
-                ...List.generate(
-                  travelSpots.length,
-                  (index) => PlaceCard(
-                    travelSport: travelSpots[index],
-                    isFullCard: true,
-                    press: () {},
-                  ),
-                ),
-                AddNewPlaceCard(),
-              ],
-            ),
+            // child: Wrap(
+            //   alignment: WrapAlignment.spaceBetween,
+            //   runSpacing: 25,
+            //   children: [
+            //     ...List.generate(
+            //       travelSpots.length,
+            //       (index) => PlaceCard(
+            //         travelSport: travelSpots[index],
+            //         isFullCard: true,
+            //         press: () {},
+            //       ),
+            //     ),
+            //     AddNewPlaceCard(),
+            //   ],
+            // ),
           ),
         ),
       ),
