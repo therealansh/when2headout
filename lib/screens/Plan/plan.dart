@@ -305,10 +305,10 @@ class _PlanPageState extends State<PlanPage> {
                           (index) => UserCard(
                             user: users[index],
                             press: () {
-                              if (_selectedFriends!.contains(users[index])) {
-                                _selectedFriends!.remove(users[index]);
+                              if (_selectedFriends.contains(users[index])) {
+                                _selectedFriends.remove(users[index]);
                               } else {
-                                _selectedFriends!.add(users[index]);
+                                _selectedFriends.add(users[index]);
                               }
                               print(_selectedFriends);
                             },
