@@ -20,7 +20,7 @@ class Body extends StatelessWidget {
             HomeHeader(),
             VerticalSpacing(),
             PopularPlaces(),
-            VerticalSpacing(),
+            VerticalSpacing(of: 18),
             PlanOrJoin(),
             VerticalSpacing(),
           ],

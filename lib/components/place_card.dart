@@ -30,6 +30,7 @@ class PlaceCard extends StatelessWidget {
             aspectRatio: isFullCard ? 1.09 : 1.29,
             child: Container(
               decoration:BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   image: AssetImage("assets/images/Red_Mountains.png"),
                   fit: BoxFit.cover,

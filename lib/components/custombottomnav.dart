@@ -64,8 +64,8 @@ class NavItem extends StatelessWidget {
     return InkWell(
       onTap: press,
       child: Container(
-        padding: EdgeInsets.all(5),
-        height: getProportionateScreenWidth(60),
+        padding: EdgeInsets.all(8),
+        height: getProportionateScreenWidth(58),
         width: getProportionateScreenWidth(60),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -77,7 +77,7 @@ class NavItem extends StatelessWidget {
             SvgPicture.asset(
               icon!,
               color: kTextColor,
-              height: 28,
+              height: 20,
             ),
             Spacer(),
             Text(

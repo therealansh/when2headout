@@ -303,7 +303,10 @@ class _MainContainerState extends State<MainContainer> with SingleTickerProvider
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.only(left: 30, top: 20),
-                      child: Column(
+                      child: widget.isPlanned ? Container(
+                        child: Center(child: Text("Plan is On:", textScaleFactor: 1.2, style: TextStyle(color: Colors.white),)),
+                      
+                      ) : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text("Friends in plan:", style: TextStyle(color: Colors.indigo[100]),),

@@ -87,15 +87,16 @@ class PlanOrJoin extends StatelessWidget {
                 child: Padding(
                   padding: MediaQuery.of(context).viewInsets,
                   child: new Container(
-                    height: getProportionateScreenHeight(250),
+                    height: getProportionateScreenHeight(450),
                       decoration: new BoxDecoration(
                           color: Colors.white,
                           borderRadius: new BorderRadius.only(
                               topLeft: const Radius.circular(20.0),
                               topRight: const Radius.circular(20.0))),
                       child: new Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children:[
+                          SizedBox(height: getProportionateScreenHeight(40)),
                           Text(
                             'Join your friends to explore the world',
                             style: TextStyle(
@@ -103,7 +104,17 @@ class PlanOrJoin extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          textField(context)
+                          SizedBox(height: getProportionateScreenHeight(20)),
+                          textField(context),
+                          SizedBox(height: getProportionateScreenHeight(20)),
+                          Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/images/current.png'),
+                              )),
+                              width: getProportionateScreenWidth(200),
+                              height: getProportionateScreenHeight(200),
+                            ),
                         ]
                       )),
                 ),
