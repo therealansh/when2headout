@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:overlapping_time/overlapping_time.dart';
 import 'package:travel/constants.dart';
 import 'package:travel/models/groups.dart';
@@ -9,7 +12,7 @@ import 'package:travel/screens/home/components/top_travelers.dart';
 import 'package:travel/screens/home/home_screen.dart';
 
 class DestinationScreen extends StatefulWidget {
-  const DestinationScreen({ Key? key, required this.groupId }) : super(key: key);
+  const DestinationScreen({ Key? key, required this.groupId}) : super(key: key);
 
   final String groupId;
 
@@ -23,22 +26,6 @@ class _DestinationScreenState extends State<DestinationScreen> {
   void initState() {    
     super.initState();
   }
-
-  List<String> images = [
-     "https://images.unsplash.com/photo-1607355739828-0bf365440db5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1444&q=80",
-      "https://images.unsplash.com/photo-1577791465485-b80039b4d69a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=668&q=80",
-      "https://images.unsplash.com/photo-1577404699057-04440b45986f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=752&q=80",
-      "https://images.unsplash.com/photo-1549973890-38d08b229439?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=642&q=80",
-      "https://images.unsplash.com/photo-1622263096760-5c79f72884af?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"
-      "https://images.pexels.com/photos/2583852/pexels-photo-2583852.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260",
-      "https://images.unsplash.com/photo-1570789210967-2cac24afeb00?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
-      "https://live.staticflickr.com/1449/23852180634_54f8aa0404_b.jpg",
-      "https://cdn.pixabay.com/photo/2017/08/09/12/05/piaynemo-2614341_960_720.jpg"
-  ];
-
-  final _pageController = PageController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +43,7 @@ class _DestinationScreenState extends State<DestinationScreen> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-           return MainContainer(title: data["name"], image: "assets/images/home_bg.png", rating: 4.5,friends: data["members"].length,id: widget.groupId,days:data["days"]);
+           return MainContainer(title: data["name"], image: "assets/images/home_bg.png", rating: 4.5,friends: data["members"].length,id: widget.groupId,days:data["days"], isPlanned: false,available: DateTimeRange(start: (data["available"]["start"] as Timestamp).toDate(), end: (data["available"]["end"] as Timestamp).toDate()),);
         }
            return Center(child: CircularProgressIndicator());
         }
@@ -71,6 +58,8 @@ class MainContainer extends StatefulWidget  {
   final double rating;
   final int friends;
   final List<dynamic> days;
+  final bool isPlanned;
+  final DateTimeRange available;
 
   MainContainer ({
     required this.id,
@@ -78,7 +67,9 @@ class MainContainer extends StatefulWidget  {
     required this.image,
     required this.rating,
     required this.friends,
-    required this.days
+    required this.days,
+    required this.isPlanned,
+    required this.available,
   });
 
   @override
@@ -112,24 +103,44 @@ class _MainContainerState extends State<MainContainer> with SingleTickerProvider
       }
     );
 
+  //BUSINESS LOGIC
     var timeRangeList = widget.days.map((e) => DateTimeRange(
       start: (e["start"] as Timestamp).toDate(),
       end: (e["end"] as Timestamp).toDate()
     )).toList();
-
     timeRangeList.add(DateTimeRange(start: dateRange.start, end: dateRange.end));
-    final Map<int, List<ComparingResult>> searchResults = findOverlap(ranges: timeRangeList);
-    print(searchResults[widget.days.length+1]!.first.overlappingRange);
-    
+    timeRangeList.sort((a, b) => a.start.compareTo(b.start));
+    DateTimeRange ans;
+    var l = timeRangeList[0].start;
+    var r = timeRangeList[0].end;
+    for(var i =1;i<timeRangeList.length;i++){
+      if(timeRangeList[i].start.isAfter(r) || timeRangeList[i].end.isBefore(l)){
+        l = DateTime(2019);
+        r = DateTime(2019);
+        break;
+      }else{
+        if(timeRangeList[i].start.isAfter(l)) l = timeRangeList[i].start;
+        if(timeRangeList[i].end.isBefore(r)) r = timeRangeList[i].end;
+      }
+    }
+    ans = DateTimeRange(start:l, end:r);
+    print(ans);
 
-  //  await firestore.collection("groups").doc(widget.id).set({
-  //    "available": {"start": time.start, "end":time.end}
-  //  });
+   await firestore.collection("groups").doc(widget.id).update({
+     "available": {"start": ans.start, "end":ans.end}
+   });
 
     setState(() {
       startDate = dateRange.start;
       endDate = dateRange.end;
     });
+  }
+
+  String processRange(DateTimeRange avail) {
+    if(avail.start == avail.end && avail.start.isBefore(DateTime.now())) return "Not Available :(";
+    String date1 = DateFormat("dd/MM/yyyy").format(avail.start);
+    String date2 = DateFormat("dd/MM/yyyy").format(avail.end);
+    return "$date1 - $date2";
   }
 
   @override
@@ -230,7 +241,7 @@ class _MainContainerState extends State<MainContainer> with SingleTickerProvider
                             Row(
                               children: <Widget>[
                                 Icon(Icons.airplanemode_active, color: Colors.indigo[100],),
-                                Container(margin: EdgeInsets.only(left: 5), child: Text("2 jam", textScaleFactor: 1.2, style: TextStyle(color: Colors.indigo[100]),),)
+                                Container(margin: EdgeInsets.only(left: 5), child: Text("2 miles", textScaleFactor: 1.2, style: TextStyle(color: Colors.indigo[100]),),)
                               ],
                             )
                           ],
@@ -310,10 +321,10 @@ class _MainContainerState extends State<MainContainer> with SingleTickerProvider
                                 borderRadius: BorderRadius.all(Radius.circular(14))
                             ),
                             child: FlatButton(
-                              onPressed: () {
+                              onPressed: widget.isPlanned ? (){} : () {
                                 openDateRangeSelector(context);
                               },
-                              child: Text("Plan yours", textScaleFactor: 1.4, style: TextStyle(color: kPrimaryColor),),
+                              child: Text(widget.isPlanned ? processRange(widget.available):"Plan yours", textScaleFactor: 1.4, style: TextStyle(color: kPrimaryColor),),
                             ),
                           )
                         ],
