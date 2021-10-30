@@ -52,10 +52,13 @@ class _PopularPlacesState extends State<PopularPlaces> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              ...items.map((e) => PlaceCard(
-                    travelSport: e,
-                    press: () {},
-                  )).take(5),
+              ...items.map((e) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: PlaceCard(
+                      travelSport: e,
+                      press: () {},
+                    ),
+              )).take(5),
               SizedBox(
                 width: getProportionateScreenWidth(kDefaultPadding),
               ),

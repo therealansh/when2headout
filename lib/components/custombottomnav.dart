@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel/screens/events/events_screen.dart';
 
 
@@ -32,12 +33,6 @@ class CustomBottonNavBar extends StatelessWidget {
                         builder: (context) => EventsScreen(),
                       ));
                 },
-              ),
-              NavItem(
-                icon: "assets/icons/chat.svg",
-                title: "Chat",
-                isActive: true,
-                press: () {},
               ),
               NavItem(
                 icon: "assets/icons/friendship.svg",
@@ -79,11 +74,11 @@ class NavItem extends StatelessWidget {
         ),
         child: Column(
           children: [
-            // SvgPicture.asset(
-            //   icon,
-            //   color: kTextColor,
-            //   height: 28,
-            // ),
+            SvgPicture.asset(
+              icon!,
+              color: kTextColor,
+              height: 28,
+            ),
             Spacer(),
             Text(
               title!,

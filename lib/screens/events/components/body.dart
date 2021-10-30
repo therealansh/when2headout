@@ -1,11 +1,106 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:travel/components/place_card.dart';
 import 'package:travel/constants.dart';
 import 'package:travel/models/TravelSpot.dart';
 import 'package:travel/models/TravelSpot.dart';
+import 'package:travel/models/groups.dart';
+import 'package:travel/screens/home/components/top_travelers.dart';
 import 'package:travel/size_config.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  List<Group> groups = [];
+
+  Future<List<Group>> getGroups() async {
+    var value = await firestore.collection("groups").get();
+    List<Group> groups = [];
+      for (int i = 0; i < value.docs.length; i++) {
+        groups.add(Group.fromMap(value.docs[i].data()));
+      }
+      return groups;
+  }
+
+  SizedBox placeCard(String name){
+    return SizedBox(
+      width: getProportionateScreenWidth(158),
+      child: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 1.09 ,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                  image: AssetImage("assets/images/Red_Mountains.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: getProportionateScreenWidth(158),
+            padding: EdgeInsets.all(
+              getProportionateScreenWidth(kDefaultPadding),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [kDefualtShadow],
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize:  17,
+                  ),
+                ),
+                
+                  // Text(
+                  //   available.day.toString(),
+                  //   style: Theme.of(context)
+                  //       .textTheme
+                  //       .headline4!
+                  //       .copyWith(fontWeight: FontWeight.bold),
+                  // ),
+                  // Text(
+                  //   DateFormat.MMMM().format(travelSport.date) +
+                  //       " " +
+                  //       travelSport.date!.year.toString(),
+                  // ),
+                VerticalSpacing(of: 10),
+                // Travelers(
+                //   users: travelSport.,
+                // ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  initState(){
+    getGroups().then((value) {
+      setState(() {
+        groups = value;
+      });
+    });
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -16,21 +111,17 @@ class Body extends StatelessWidget {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(bottom: 25),
-            // child: Wrap(
-            //   alignment: WrapAlignment.spaceBetween,
-            //   runSpacing: 25,
-            //   children: [
-            //     ...List.generate(
-            //       travelSpots.length,
-            //       (index) => PlaceCard(
-            //         travelSport: travelSpots[index],
-            //         isFullCard: true,
-            //         press: () {},
-            //       ),
-            //     ),
-            //     AddNewPlaceCard(),
-            //   ],
-            // ),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              runSpacing: 25,
+              children: [
+                ...List.generate(
+                  groups.length,
+                  (index) => placeCard(groups[index].name!),
+                ),
+                AddNewPlaceCard(),
+              ],
+            ),
           ),
         ),
       ),

@@ -28,20 +28,28 @@ class PlaceCard extends StatelessWidget {
         children: [
           AspectRatio(
             aspectRatio: isFullCard ? 1.09 : 1.29,
-            child: CachedNetworkImage(
-              placeholder: (context,url)=>CircularProgressIndicator(),
-              imageUrl: travelSport.image!.url!,
-              imageBuilder: (context,imgProv) => Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
+            child: Container(
+              decoration:BoxDecoration(
                 image: DecorationImage(
-                    image: imgProv
-              ),)
+                  image: AssetImage("assets/images/Red_Mountains.png"),
+                  fit: BoxFit.cover,
+                ),
+              )
             ),
-            )
+            // child: CachedNetworkImage(
+            //   placeholder: (context,url)=>CircularProgressIndicator(),
+            //   imageUrl: travelSport.image!.url!,
+            //   imageBuilder: (context,imgProv) => Container(
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(20),
+            //       topRight: Radius.circular(20),
+            //     ),
+            //     image: DecorationImage(
+            //         image: imgProv
+            //   ),)
+            // ),
+            // )
           ),
           Container(
             width: getProportionateScreenWidth(isFullCard ? 158 : 137),
