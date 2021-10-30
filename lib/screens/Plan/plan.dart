@@ -2,6 +2,7 @@
 
 import 'dart:collection';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:travel/components/section_title.dart';
@@ -15,15 +16,16 @@ final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
 final kLastDay = DateTime(kToday.year + 99, kToday.month, kToday.day);
 
 class PlanPage extends StatefulWidget {
-  const PlanPage({Key? key}) : super(key: key);
-
+  const PlanPage({Key? key, this.user}) : super(key: key);
+  final User? user;
   @override
   _PlanPageState createState() => _PlanPageState();
 }
 
 class _PlanPageState extends State<PlanPage> {
-  final TextEditingController _place = TextEditingController();
 
+  final TextEditingController _place = TextEditingController();
+  
   Container textField() => Container(
         margin: EdgeInsets.all(15.0),
         height: 61,
@@ -170,15 +172,14 @@ class _PlanPageState extends State<PlanPage> {
     print(_selectedDays);
   }
 
-  List<User> _selectedFriends = [];
+  List<UserModel> _selectedFriends = [];
+  List<UserModel> users = [];
 
-  List<User> users = [];
-
-  Future<List<User>> getUser() async {
+  Future<List<UserModel>> getUser() async {
     final users = await firestore.collection('users').get();
-    final List<User> userList = [];
+    final List<UserModel> userList = [];
     for (var user in users.docs) {
-      userList.add(User.fromMap(user.data()));
+      userList.add(UserModel.fromMap(user.data()));
     }
     return userList;
   }
@@ -193,17 +194,21 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   Future<bool?> postGroup() async {
-    if (_selectedFriends.isEmpty ||
-        _selectedDays.length != 2 || 
+    if (_selectedDays.length != 2 || 
         _place.text.isEmpty) {
       return false;
     } else {
+      _selectedFriends.add(UserModel(
+        name: widget.user?.displayName,
+        image: widget.user?.photoURL,
+        uid: widget.user?.uid,
+      ));
       try {
         final group = await firestore.collection('groups').add({
           'name': _place.text,
-          'members': _selectedFriends.map((user) => user.name).toList(),
+          'members': _selectedFriends.map((user) => user.uid).toList(),
           'days':[{'start':_selectedDays.first, 'end':_selectedDays.last}],
-          "available":[{'start':_selectedDays.first, 'end':_selectedDays.last}],
+          "available":{'start':_selectedDays.first, 'end':_selectedDays.last},
         }).then((value) => true);
       } catch (e) {
         print(e);
@@ -298,10 +303,10 @@ class _PlanPageState extends State<PlanPage> {
                           (index) => UserCard(
                             user: users[index],
                             press: () {
-                              if (_selectedFriends.contains(users[index])) {
-                                _selectedFriends.remove(users[index]);
+                              if (_selectedFriends!.contains(users[index])) {
+                                _selectedFriends!.remove(users[index]);
                               } else {
-                                _selectedFriends.add(users[index]);
+                                _selectedFriends!.add(users[index]);
                               }
                               print(_selectedFriends);
                             },

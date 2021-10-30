@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:travel/components/section_title.dart';
 import 'package:travel/constants.dart';
 import 'package:travel/screens/Plan/plan.dart';
+import 'package:travel/screens/home/home_screen.dart';
 import 'package:travel/size_config.dart';
 
 class PlanOrJoin extends StatelessWidget {
@@ -26,7 +27,7 @@ class PlanOrJoin extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlanPage()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlanPage(user: user,)));
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16),

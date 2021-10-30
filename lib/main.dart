@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:travel/screens/home/home_screen.dart';
+import 'package:travel/screens/login/login.dart';
 
 import 'constants.dart';
 
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
             GoogleFonts.poppinsTextTheme().apply(displayColor: kTextColor),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: Login() ,
     );
   }
 }

@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 
-class User {
-  final String? name, image;
+class UserModel {
+  final String? name, image,uid;
 
-  User({@required this.name, @required this.image});
+  UserModel({@required this.name, @required this.image, this.uid});
 
-  static User fromMap(Map<String, dynamic> data) {
-    return User(
+  static UserModel fromMap(Map<String, dynamic> data) {
+    return UserModel(
       name: data['name'] as String,
       image: data['image'] as String,
+      uid: data["uid"] as String,
     );
   }
 }
 
 // Demo List of Top Travelers
-List<User> topTravelers = [user1, user2, user3, user4];
+List<UserModel> topTravelers = [user1, user2, user3, user4];
 
 // demo user
-User user1 = User(name: "James", image: "assets/images/james.png");
-User user2 = User(name: "John", image: "assets/images/John.png");
-User user3 = User(name: "Marry", image: "assets/images/marry.png");
-User user4 = User(name: "Rosy", image: "assets/images/rosy.png");
+UserModel user1 = UserModel(name: "James", image: "assets/images/james.png");
+UserModel user2 = UserModel(name: "John", image: "assets/images/John.png");
+UserModel user3 = UserModel(name: "Marry", image: "assets/images/marry.png");
+UserModel user4 = UserModel(name: "Rosy", image: "assets/images/rosy.png");

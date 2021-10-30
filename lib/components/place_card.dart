@@ -90,7 +90,7 @@ class PlaceCard extends StatelessWidget {
                   // ),
                 VerticalSpacing(of: 10),
                 // Travelers(
-                //   users: travelSport.,
+                //   users: ,
                 // ),
               ],
             ),
@@ -107,7 +107,7 @@ class Travelers extends StatelessWidget {
     required this.users,
   }) : super(key: key);
 
-  final List<User> users;
+  final List<UserModel> users;
 
   @override
   Widget build(BuildContext context) {

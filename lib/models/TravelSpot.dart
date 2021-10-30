@@ -4,7 +4,7 @@ import 'package:travel/models/User.dart';
 class TravelSpot {
   final String? name, image;
   final DateTime? date;
-  final List<User>? users;
+  final List<UserModel>? users;
 
   TravelSpot({
     @required this.users,
@@ -35,4 +35,4 @@ List<TravelSpot> travelSpots = [
   ),
 ];
 
-List<User> users = [user1, user2, user3];
+List<UserModel> users = [user1, user2, user3];

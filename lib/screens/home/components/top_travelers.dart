@@ -14,7 +14,7 @@ class UserCard extends StatefulWidget {
     required this.press,
   }) : super(key: key);
 
-  final User user;
+  final UserModel user;
   final GestureTapCallback press;
 
   @override
