@@ -179,6 +179,8 @@ class _PlanPageState extends State<PlanPage> {
     final users = await firestore.collection('users').get();
     final List<UserModel> userList = [];
     for (var user in users.docs) {
+      UserModel userModel = UserModel.fromMap(user.data());
+      if(userModel.uid == widget.user?.uid) continue;
       userList.add(UserModel.fromMap(user.data()));
     }
     return userList;

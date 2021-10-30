@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel/constants.dart';
+import 'package:travel/screens/home/components/top_travelers.dart';
 import 'package:travel/screens/home/home_screen.dart';
 import 'package:travel/services/google_sign_in.dart';
 import 'package:travel/size_config.dart';
@@ -67,6 +69,16 @@ class _LoginState extends State<Login> {
                     FirebaseService service = new FirebaseService();
                     try {
                       await service.signInwithGoogle().then((value) => {});
+                      User? res = FirebaseAuth.instance.currentUser;
+                      await firestore.collection('users').doc(res?.uid).get().then((val)=>{
+                        if(val.exists){
+                          // ignore: avoid_print
+                          print("okay")
+                        }else{
+                          val.reference.set({
+                            'name':res?.displayName,"uid":res?.uid,'image':res?.photoURL})
+                        }
+                      });
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
                     } catch (e) {
                       print(e);
